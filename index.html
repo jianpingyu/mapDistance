@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body,
+        html,
+        #allmap {
+            width: 100%;
+            height: 95%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+        ul {
+          margin: 5px;
+        }
+        ul li {
+          list-style: none;
+          display: inline-block;
+        }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=Q7wsLFhwseTAAhKPgbHFMHMp"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/DistanceTool/1.2/src/DistanceTool_min.js"></script>
+    <title>地图展示</title>
+</head>
+
+<body>
+    <div id="allmap"></div>
+    <div>
+      <ul>
+        <li>
+          <label>范围</label>
+          <input type="number" id="scopeDistance" value="1500" />
+        </li>
+        <li>
+          <input type="button" value="确定" onclick="reinit()" />
+          <input type="button" value="开启" onclick="myDis.open()" />
+          <input type="button" value="关闭" onclick="myDis.close()" />
+        </li>
+      </ul>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("allmap"); // 创建Map实例
+    map.centerAndZoom(new BMap.Point(118.826885, 31.950335), 14); // 初始化地图,设置中心点坐标和地图级别
+    map.addControl(new BMap.MapTypeControl()); //添加地图类型控件
+    map.setCurrentCity("南京"); // 设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+    map.addEventListener("click",function(e){
+  		console.log(e.point);
+  	});
+    var local = new BMap.LocalSearch(map, {
+  		renderOptions:{map: map}
+  	});
+    var myDis = new BMapLib.DistanceTool(map);
+    var businessPoint = [
+      {lng: 118.808999, lat: 31.974421, color: 'blue'}, // 证大
+      {lng: 118.826534, lat: 31.938132, color: 'red'}, // 金鹰
+      {lng: 118.826885, lat: 31.950335, color: '#FF00FF'}, // 同曦
+      {lng: 118.849729, lat: 31.957442, color: 'green'}, // 万达
+      {lng: 118.809215, lat: 31.985164, color: '#EE9A00'}, // 迪卡侬
+    ];
+    function changeOverlay() {
+      removeOverlay();
+      for (var i = 0; i < businessPoint.length; i++) {
+        var point = businessPoint[i];
+        var circle = new BMap.Circle(new BMap.Point(point.lng, point.lat), document.getElementById('scopeDistance').value, {strokeColor: point.color, strokeWeight:2, strokeOpacity:1, fillOpacity:0.1}); //创建圆
+      	map.addOverlay(circle);
+      }
+    }
+
+    function removeOverlay() {
+      map.clearOverlays();
+    }
+
+    function reinit() {
+      changeOverlay();
+    }
+</script>
